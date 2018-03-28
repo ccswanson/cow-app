@@ -4,9 +4,8 @@ import ReactDOM from 'react-dom';
 import { withTracker } from 'meteor/react-meteor-data';
 
 import AddCalfModal from './AddCalfModal';
-import ViewCalfModal from './ViewCalfModal';
+import EditCalfModal from './EditCalfModal';
 
-import {Cows} from '../api/cows.js';
 import { Calves } from '../api/cows.js';
 
 class ViewModal extends React.Component {
@@ -16,12 +15,18 @@ class ViewModal extends React.Component {
 
     this.state = { isOpen: false,
                   isOpenView: false,
+                  isOpenEdit: false,
                   };
   }
 
   toggleAddCalfModal = () => {
     this.setState({
       isOpen: !this.state.isOpen
+    });
+  }
+  toggleEditCalfModal = () => {
+    this.setState({
+      isOpen: !this.state.isOpenEdit
     });
   }
   toggleViewCalfModal = () => {
@@ -58,19 +63,26 @@ class ViewModal extends React.Component {
     };
 
     const currentCalf = ()=>{
+      const currentCalfYear = Session.get('currentYear');
       const currentCalf = this.props.cow.calf;
-      const currentCalfYear = this.props.calves.map(calf=>{
-          if(calf._id == currentCalf){
+      const Calf = this.props.calves.map(calf=>{
+          if(calf.calfYear == currentCalfYear && calf._id == currentCalf){
              return(<div key="Calves">
                       <div key={calf.calfDOB}>Date of Birth --    {calf.calfDOB}</div>
                       <div key="Sex">Sex --     {calf.calfSex}</div>
                       <div key="location">{calf.calfYear} Location --     {calf.location}</div>
                       <div key="preCondWeight">Preconditioning Weight --    {calf.preCondWeight}</div>
                       <div key="HorL">Heavy or Light --     {calf.heavyLight}</div>
+                      <button className="w3-button w3-orange w3-display-bottomcenter" onClick={this.toggleEditCalfModal.bind(this)} type="button">
+                        Edit Calf
+                      </button>
+                      <EditCalfModal {...this.props} show={this.state.isOpenEdit}
+                        onClose={this.toggleEditCalfModal}>
+                      </EditCalfModal>
                     </div>)
           }
       });
-      return(currentCalfYear)
+      return(Calf)
     }
 
     return (<div className="backdrop" style={backdropStyle}>
@@ -80,7 +92,7 @@ class ViewModal extends React.Component {
         <div>Birth Year -- {this.props.cow.birthYear}</div>
         <div>Origin -- {this.props.cow.origin}</div>
         <div className="calf-cards-title">Calves</div>
-        {this.props.cow.calf ? currentCalf() :null}
+        {this.props.cow.calf ? currentCalf(this) :null}
         <button className="w3-button w3-green w3-display-bottomleft" onClick={this.toggleAddCalfModal} type="button">
           Add Calf
         </button>
@@ -90,9 +102,6 @@ class ViewModal extends React.Component {
         <AddCalfModal {...this.props} show={this.state.isOpen}
           onClose={this.toggleAddCalfModal}>
         </AddCalfModal>
-        <ViewCalfModal {...this.props} showView={this.state.isOpenView}
-          onClose={this.toggleViewCalfModal}>
-        </ViewCalfModal>
       </div>
     </div>);
   }

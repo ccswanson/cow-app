@@ -20,14 +20,16 @@ class AddCalfModal extends React.Component {
 
     let alreadyExists = false
     if(this.props.cow.calf){
-      const yearArray = this.props.cow.calf.map(calf=>calf.calfYear)
+      console.log(this.props.cow.calf);
+
+      const yearArray = this.props.calves.map(calf=>calf.calfYear)
       yearArray.map(year=>{
         if(year == calfYear){
-          return(alreadyExists = true)
+
+          alreadyExists = true
         }
       });
     }
-
     if(alreadyExists == false){
       Cows.update(
         this.props.cow._id, {
